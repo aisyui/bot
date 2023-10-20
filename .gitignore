@@ -1,0 +1,7 @@
+Cargo.lock
+target
+*.json
+*.DS_Store
+**.DS_Store
+scpt/json/
+.config/ai
