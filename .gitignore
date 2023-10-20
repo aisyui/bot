@@ -1,0 +1,14 @@
+Cargo.lock
+target
+*.json
+*.DS_Store
+**.DS_Store
+scpt/json/
+.config/ai/*.toml
+.config/ai/*.json
+.config/ai/txt
+.config/ai/png
+.ssh/*.key
+.ssh/*.pub
+.ssh/*config
+.env

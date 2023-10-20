@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f ../compose.yml --volumes hostPath
+    kompose.version: 1.32.0 (HEAD)
+  labels:
+    io.kompose.service: aios
+  name: aios
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: aios
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ../compose.yml --volumes hostPath
+        kompose.version: 1.32.0 (HEAD)
+      labels:
+        io.kompose.network/bot-default: "true"
+        io.kompose.service: aios
+    spec:
+      containers:
+        - env:
+            - name: ADMIN
+              valueFrom:
+                configMapKeyRef:
+                  key: ADMIN
+                  name: env
+            - name: HANDLE
+              valueFrom:
+                configMapKeyRef:
+                  key: HANDLE
+                  name: env
+            - name: HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: HOST
+                  name: env
+            - name: PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: PASSWORD
+                  name: env
+          image: aios
+          name: aios
+          volumeMounts:
+            - mountPath: /root/.config
+              name: aios-hostpath0
+      restartPolicy: Always
+      volumes:
+        - hostPath:
+            path: /Users/syui/ai/bot/.config
+          name: aios-hostpath0

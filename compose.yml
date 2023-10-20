@@ -1,0 +1,11 @@
+services:
+  aios:
+    #image: syui/aios
+    #command: ai bot -a syui.syu.is
+    build:
+      context: .
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./.config:/root/.config

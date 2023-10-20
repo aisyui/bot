@@ -1,0 +1,3 @@
+[submodule "bot_scpt"]
+	path = .config/ai/scpt
+	url = git@git.syui.ai:ai/bot_scpt.git

@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  ADMIN: $ADMIN
+  HANDLE: $HANDLE
+  HOST: $HOST
+  PASSWORD: $PASSWORD
+kind: ConfigMap
+metadata:
+  labels:
+    io.kompose.service: aios-env
+  name: env
