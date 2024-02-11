@@ -4,12 +4,10 @@ use std::env;
 
 use crate::ascii::c_ascii;
 use crate::data::data_toml;
-use crate::data::log_file;
 use crate::data::url;
 use crate::data::w_cfg;
-use crate::data::w_cid;
-use crate::data::c_char;
-use data::Notify as Notify;
+use crate::bot::c_bot;
+//use data::Notify as Notify;
 
 pub mod ascii;
 pub mod data;
@@ -22,6 +20,9 @@ pub mod reply;
 pub mod reply_link;
 pub mod describe;
 pub mod timeline_author;
+pub mod post;
+pub mod post_link;
+pub mod bot;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -72,6 +73,16 @@ fn main() {
             .description("did <handle>")
             .action(did)
             )
+        .command(
+            Command::new("post")
+            .description("p <text>")
+            .alias("p")
+            .action(post)
+            .flag(
+                Flag::new("link", FlagType::String)
+                .alias("l"),
+            )
+        )
         //.command(
         //    Command::new("like")
         //    .description("$ ai like <cid>\n\t\t\t$ ai like <cid> -u <uri>")
@@ -120,13 +131,6 @@ fn main() {
         //    )
         //    )
         //    .command(
-        //        Command::new("handle")
-        //        .usage("atr h")
-        //        .description("handle update\n\t\t\t$ atr -h example.com\n\t\t\t$ atr -h user.bsky.social")
-        //        .alias("h")
-        //        .action(c_handle)
-        //    )
-        //    .command(
         //        Command::new("feed")
         //        .usage("atr f")
         //        .description("feed user\n\t\t\t$ atr f\n\t\t\t$ atr f -u user.bsky.social")
@@ -138,25 +142,7 @@ fn main() {
         //            .alias("u"),
         //        )
         //    )
-        //    .command(
-        //        Command::new("post")
-        //        .description("$ ai p <text>\n\t\t\t$ ai p <text> -l https://syui.ai")
-        //        .alias("p")
-        //        .action(c_post)
-        //        .flag(
-        //            Flag::new("link", FlagType::String)
-        //            .description("link flag(ex: $ atr p -l)")
-        //            .alias("l"),
-        //        )
-        //        .flag(
-        //            Flag::new("cid", FlagType::String)
-        //            .description("link flag(ex: $ atr p -l)")
-        //        )
-        //        .flag(
-        //            Flag::new("uri", FlagType::String)
-        //            .description("link flag(ex: $ atr p -l)")
-        //        )
-        //    )
+        
         //    .command(
         //        Command::new("reply")
         //        .usage("atr r {}")
@@ -281,71 +267,22 @@ fn timeline(c: &Context) {
     return res
 }
 
-fn c_bot(c: &Context) {
-    
+fn post(c: &Context) {
+    refresh(c);
+    let m = c.args[0].to_string();
     let h = async {
-        let mut notify = notify::get_request(100).await;
-        if notify == "err" {
-            refresh(c);
-            notify = notify::get_request(100).await;
-        }
-        let notify: Notify = serde_json::from_str(&notify).unwrap();
-
-        let n = notify.notifications;
-        let length = &n.len();
-        let su = 0..*length;
-        for i in su {
-            let reason = &n[i].reason;
-            let handle = &n[i].author.handle;
-            let did = &n[i].author.did;
-            let read = n[i].isRead;
-            let cid = &n[i].cid;
-            let uri = &n[i].uri;
-            let time = &n[i].indexedAt;
-            let mut cid_root = cid;
-            let mut uri_root = uri;
-            let check_cid = w_cid(cid.to_string(), log_file(&"n1"), false);
-            let check_cid_run = w_cid(cid.to_string(), log_file(&"n2"), false);
-            // thread
-            if ! n[i].record.reply.is_none() {
-                cid_root = &n[i].record.reply.as_ref().unwrap().root.cid;
-                uri_root = &n[i].record.reply.as_ref().unwrap().root.uri;
-            }
-            println!("{}", read);
-            println!("{}", handle);
-            println!("{} {}", cid, uri);
-            let mut text = "";
-            if ! n[i].record.text.is_none() { 
-                text = &n[i].record.text.as_ref().unwrap();
-            }
-            let vec: Vec<&str> = text.split_whitespace().collect();
-            let rep_com = &vec[0..].join(" ");
-
-            if check_cid == false && { reason == "mention" || reason == "reply" } || check_cid_run == false && { reason == "mention" || reason == "reply" } {
-                w_cid(cid.to_string(), log_file(&"n2"), true);
-                if rep_com.contains("did") == true || rep_com.contains("/did") == true {
-                    let link = "https://plc.directory/".to_owned() + &did + &"/log";
-                    let s = 0;
-                    let e = link.chars().count();
-
-                    let d = "\n".to_owned() + &did.to_string();
-                    let text_limit = c_char(d);
-
-                    if text_limit.len() > 3 {
-                        let str_rep = reply_link::post_request(text_limit.to_string(), link.to_string(), s, e.try_into().unwrap(), cid.to_string(), uri.to_string(), cid_root.to_string(), uri_root.to_string()).await;
-                        let str_notify = notify_read::post_request(time.to_string()).await;
-
-                        w_cid(cid.to_string(), log_file(&"n1"), true);
-                        println!("{}", str_rep);
-                        println!("{}", str_notify);
-                    }
-                }
-            }
+        if let Ok(link) = c.string_flag("link") {
+            let e = link.chars().count();
+            let s = 0;
+            let str = post_link::post_request(m.to_string(), link.to_string(), s, e.try_into().unwrap());
+            println!("{}",str.await);
+        } else {
+            let str = post::post_request(m.to_string());
+            println!("{}",str.await);
         }
     };
     let res = tokio::runtime::Runtime::new().unwrap().block_on(h);
     return res
-
 }
 
 fn bot(c: &Context) {
