@@ -10,6 +10,7 @@ use crate::reply_link;
 
 use crate::data::c_char;
 use crate::data::data_scpt;
+use crate::data::data_toml;
 use crate::data::log_file;
 use crate::data::w_cid;
 use crate::data::Notify;
@@ -22,7 +23,7 @@ pub fn c_bot(c: &Context) {
             notify = notify::get_request(100).await;
         }
         let notify: Notify = serde_json::from_str(&notify).unwrap();
-
+        let host = data_toml(&"host");
         let n = notify.notifications;
         let length = &n.len();
         let su = 0..*length;
@@ -143,6 +144,7 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
                         .output()
@@ -160,6 +162,7 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
                         .output()
@@ -180,6 +183,7 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
                         .output()
@@ -229,6 +233,7 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
                         .output()
@@ -260,6 +265,7 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
                         .output()
@@ -291,6 +297,7 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
                         .output()
@@ -320,6 +327,7 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
                         .output()
@@ -351,6 +359,7 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
                         .output()
@@ -383,6 +392,7 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
                         .output()
@@ -410,6 +420,7 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
                         .output()
