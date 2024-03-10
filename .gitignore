@@ -12,3 +12,8 @@ scpt/json/
 .ssh/*.pub
 .ssh/*config
 .env
+
+pnpm-lock.yaml
+**Cargo.lock
+*/target/
+*/**/*.rs.bk

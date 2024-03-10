@@ -81,8 +81,8 @@ pub fn c_bot(c: &Context) {
                 println!("{}", read);
                 println!("{}", handle);
                 println!(
-                    "cid:{}\nuri:{}\ncid_root:{}\nuri_root:{}",
-                    cid, uri, cid_root, uri_root
+                    "cid:{}\nuri:{}\ncid_root:{}\nuri_root:{}\nhost:{}",
+                    cid, uri, cid_root, uri_root, host
                 );
                 println!("reason:{}\ncom:{}\nprompt:{}", reason, com, prompt);
                 println!("prompt_sub:{}", prompt_sub);

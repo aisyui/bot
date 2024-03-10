@@ -50,3 +50,10 @@ services:
       - ./.config:/root/.config
     command: ai bot -a syui.syu.is
 ```
+
+### openapi
+
+```sh
+# https://github.com/rdmurphy/atproto-openapi-types
+$ curl -sLO https://raw.githubusercontent.com/rdmurphy/atproto-openapi-types/main/spec/api.json
+```
