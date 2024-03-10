@@ -144,9 +144,9 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
-                        .arg(&host)
                         .output()
                         .expect("zsh");
                     w_cid(cid.to_string(), log_file(&"n1"), true);
@@ -162,9 +162,9 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
-                        .arg(&host)
                         .output()
                         .expect("zsh");
                     let d = String::from_utf8_lossy(&output.stdout);
@@ -183,9 +183,9 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
-                        .arg(&host)
                         .output()
                         .expect("zsh");
                     let d = String::from_utf8_lossy(&output.stdout);
@@ -233,9 +233,9 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
-                        .arg(&host)
                         .output()
                         .expect("zsh");
                     let d = String::from_utf8_lossy(&output.stdout);
@@ -265,9 +265,9 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
-                        .arg(&host)
                         .output()
                         .expect("zsh");
                     let d = String::from_utf8_lossy(&output.stdout);
@@ -297,9 +297,9 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
-                        .arg(&host)
                         .output()
                         .expect("zsh");
                     let d = String::from_utf8_lossy(&output.stdout);
@@ -327,9 +327,9 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
-                        .arg(&host)
                         .output()
                         .expect("zsh");
                     let d = String::from_utf8_lossy(&output.stdout);
@@ -359,9 +359,9 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
-                        .arg(&host)
                         .output()
                         .expect("zsh");
                     let d = String::from_utf8_lossy(&output.stdout);
@@ -392,9 +392,9 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
-                        .arg(&host)
                         .output()
                         .expect("zsh");
                     let d = String::from_utf8_lossy(&output.stdout);
@@ -420,9 +420,9 @@ pub fn c_bot(c: &Context) {
                         .arg(&uri)
                         .arg(&cid_root)
                         .arg(&uri_root)
+                        .arg(&host)
                         .arg(&prompt)
                         .arg(&prompt_sub)
-                        .arg(&host)
                         .output()
                         .expect("zsh");
                     let d = String::from_utf8_lossy(&output.stdout);
