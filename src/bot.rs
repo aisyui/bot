@@ -192,36 +192,22 @@ pub fn c_bot(c: &Context) {
                     let dd = "\n".to_owned() + &d.to_string();
                     let text_limit = c_char(dd);
                     if text_limit.len() > 3 {
-                        if d.contains("handle") == false {
-                            let str_rep = reply_link::post_request(
-                                text_limit.to_string(),
-                                link.to_string(),
-                                s,
-                                e.try_into().unwrap(),
-                                cid.to_string(),
-                                uri.to_string(),
-                                cid_root.to_string(),
-                                uri_root.to_string(),
-                            )
+                        //handlev = handle.replace(".", "-").to_string();
+                        handlev = d.lines().collect::<Vec<_>>()[0].to_string();
+                        link = "https://card.syui.ai/".to_owned() + &handlev;
+                        e = link.chars().count();
+                        let str_rep = reply_link::post_request(
+                            text_limit.to_string(),
+                            link.to_string(),
+                            s,
+                            e.try_into().unwrap(),
+                            cid.to_string(),
+                            uri.to_string(),
+                            cid_root.to_string(),
+                            uri_root.to_string(),
+                        )
                             .await;
-                            println!("{}", str_rep);
-                        } else {
-                            handlev = handle.replace(".", "-").to_string();
-                            link = "https://card.syui.ai/".to_owned() + &handlev;
-                            e = link.chars().count();
-                            let str_rep = reply_link::post_request(
-                                d.to_string(),
-                                link.to_string(),
-                                s,
-                                e.try_into().unwrap(),
-                                cid.to_string(),
-                                uri.to_string(),
-                                cid_root.to_string(),
-                                uri_root.to_string(),
-                            )
-                            .await;
-                            println!("{}", str_rep);
-                        }
+                        println!("{}", str_rep);
                         w_cid(cid.to_string(), log_file(&"n1"), true);
                     }
                 } else if com == "fav" {
@@ -242,8 +228,11 @@ pub fn c_bot(c: &Context) {
                     let dd = "\n".to_owned() + &d.to_string();
                     let text_limit = c_char(dd);
                     if text_limit.len() > 3 {
+                        handlev = d.lines().collect::<Vec<_>>()[0].to_string();
+                        link = "https://card.syui.ai/".to_owned() + &handlev;
+                        e = link.chars().count();
                         let str_rep = reply_link::post_request(
-                            d.to_string(),
+                            text_limit.to_string(),
                             link.to_string(),
                             s,
                             e.try_into().unwrap(),
@@ -274,8 +263,11 @@ pub fn c_bot(c: &Context) {
                     let dd = "\n".to_owned() + &d.to_string();
                     let text_limit = c_char(dd);
                     if text_limit.len() > 3 {
+                        handlev = d.lines().collect::<Vec<_>>()[0].to_string();
+                        link = "https://card.syui.ai/".to_owned() + &handlev;
+                        e = link.chars().count();
                         let str_rep = reply_link::post_request(
-                            d.to_string(),
+                            text_limit.to_string(),
                             link.to_string(),
                             s,
                             e.try_into().unwrap(),
@@ -333,9 +325,12 @@ pub fn c_bot(c: &Context) {
                         .output()
                         .expect("zsh");
                     let d = String::from_utf8_lossy(&output.stdout);
-                    let d = "\n".to_owned() + &d.to_string();
-                    let text_limit = c_char(d);
+                    let dd = "\n".to_owned() + &d.to_string();
+                    let text_limit = c_char(dd);
                     if text_limit.len() > 3 {
+                        handlev = d.lines().collect::<Vec<_>>()[0].to_string();
+                        link = "https://card.syui.ai/".to_owned() + &handlev;
+                        e = link.chars().count();
                         let str_rep = reply_link::post_request(
                             text_limit.to_string(),
                             link.to_string(),
@@ -365,8 +360,12 @@ pub fn c_bot(c: &Context) {
                         .output()
                         .expect("zsh");
                     let d = String::from_utf8_lossy(&output.stdout);
-                    let d = "\n".to_owned() + &d.to_string();
-                    let text_limit = c_char(d);
+                    let dd = "\n".to_owned() + &d.to_string();
+                    let text_limit = c_char(dd);
+                    handlev = d.lines().collect::<Vec<_>>()[0].to_string();
+                    link = "https://card.syui.ai/".to_owned() + &handlev;
+                    println!("{}", e);
+                    e = link.chars().count();
                     if text_limit.len() > 3 {
                         let str_rep = reply_link::post_request(
                             text_limit.to_string(),

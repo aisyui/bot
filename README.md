@@ -69,7 +69,7 @@ $ ai bot
 |@yui.syui.ai fav|{cid}|mention, reply| [card.syui.ai](https://card.syui.ai)  |user|
 |@yui.syui.ai egg|{password}|mention, reply| [card.syui.ai](https://card.syui.ai)  |user|
 |@yui.syui.ai 占い||mention, reply| [yui.syui.ai](https://yui.syui.ai) |user|
-|@yui.syui.ai nyan|🍰|mention, reply| [yui.syui.ai](https://yui.syui.ai) |user|
+|@yui.syui.ai nyan|🍬|mention, reply| [yui.syui.ai](https://yui.syui.ai) |user|
 |@yui.syui.ai diffusers|{keyword}|mention, reply| [huggingface.co/diffusers](https://huggingface.co/docs/diffusers/index) |user|
 |@yui.syui.ai sh|{command}|mention, reply| [archlinux.org](https://wiki.archlinux.org/title/Systemd-nspawn) |admin|
 
