@@ -1,3 +1,10 @@
+### test-notify
+
+```sh
+./target/debug/ai n|jq -r ".notifications|.[].cid" >> ~/.config/ai/txt/notify_cid*
+./target/debug/ai bot
+```
+
 ### docker
 
 ```sh
