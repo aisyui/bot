@@ -1,11 +1,11 @@
-### test-notify
+## test-notify
 
 ```sh
 ./target/debug/ai n|jq -r ".notifications|.[].cid" >> ~/.config/ai/txt/notify_cid*
 ./target/debug/ai bot
 ```
 
-### docker
+## docker
 
 ```sh
 $ docker run -it syui/aios ai
@@ -18,7 +18,7 @@ $ cp -rf ~/.config/ai ./.config/
 $ docker compose up
 ```
 
-### cron
+## cron
 
 ```sh
 $ sudo pacman -S fcron
@@ -26,7 +26,7 @@ $ fcrontab -e
 * * * * * $HOME/bot/test/ai.zsh c
 ```
 
-### ssh
+## ssh
 
 ```sh
 $ ssh-keygen -f /.ssh/diffusers.key -t ed25519
@@ -58,9 +58,17 @@ services:
     command: ai bot -a syui.syu.is
 ```
 
-### openapi
+## openapi
 
 ```sh
 # https://github.com/rdmurphy/atproto-openapi-types
 $ curl -sLO https://raw.githubusercontent.com/rdmurphy/atproto-openapi-types/main/spec/api.json
 ```
+
+## plc
+
+```sh
+# 何度か実行するとplcをlatestまでexportされる
+$ .config/ai/scpt/test/pds.zsh e
+``` 
+
