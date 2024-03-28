@@ -118,7 +118,7 @@ pub fn c_bot(c: &Context) {
                         w_cid(cid.to_string(), log_file(&"n1"), true);
                         println!("{}", str_rep);
                     }
-                } else if com == "help" {
+                } else if com == "help" || com == "/help" {
                     let link = "https://git.syui.ai/ai/bot/wiki/help".to_string();
                     let s = 0;
                     let e = link.chars().count();
@@ -135,7 +135,7 @@ pub fn c_bot(c: &Context) {
                         .await;
                     w_cid(cid.to_string(), log_file(&"n1"), true);
                     println!("{}", str_rep);
-                } else if com == "diffusers" {
+                } else if com == "diffusers"  || com == "/diffusers" {
                     let _output = Command::new(data_scpt(&"ai"))
                         .arg(&"atproto").arg(&"diffusers")
                         .arg(&handle)
@@ -174,7 +174,7 @@ pub fn c_bot(c: &Context) {
                         println!("{}", text_limit);
                         w_cid(cid.to_string(), log_file(&"n1"), true);
                     }
-                } else if com == "card" {
+                } else if com == "card" || com == "/card" {
                     let output = Command::new(data_scpt(&"ai"))
                         .arg(&"atproto").arg(&"card")
                         .arg(&handle)
@@ -210,7 +210,7 @@ pub fn c_bot(c: &Context) {
                         println!("{}", str_rep);
                         w_cid(cid.to_string(), log_file(&"n1"), true);
                     }
-                } else if com == "fav" {
+                } else if com == "fav" || com == "/fav" {
                     let output = Command::new(data_scpt(&"ai"))
                         .arg(&"atproto").arg(&"fav")
                         .arg(&handle)
@@ -245,7 +245,7 @@ pub fn c_bot(c: &Context) {
                         println!("{}", str_rep);
                         w_cid(cid.to_string(), log_file(&"n1"), true);
                     }
-                } else if com == "egg" {
+                } else if com == "egg"  || com == "/egg" {
                     let output = Command::new(data_scpt(&"ai"))
                         .arg(&"atproto").arg(&"egg")
                         .arg(&handle)
@@ -280,7 +280,7 @@ pub fn c_bot(c: &Context) {
                         println!("{}", str_rep);
                         w_cid(cid.to_string(), log_file(&"n1"), true);
                     }
-                } else if com == "nyan" {
+                } else if com == "nyan" || com == "/nyan" {
                     let output = Command::new(data_scpt(&"ai"))
                         .arg(&"atproto").arg(&"nyan")
                         .arg(&handle)
@@ -310,7 +310,7 @@ pub fn c_bot(c: &Context) {
                         println!("{}", str_rep);
                         w_cid(cid.to_string(), log_file(&"n1"), true);
                     }
-                } else if com == "ten" {
+                } else if com == "ten" || com == "/ten" {
                     let output = Command::new(data_scpt(&"ai"))
                         .arg(&"atproto").arg(&"ten")
                         .arg(&handle)
@@ -345,7 +345,7 @@ pub fn c_bot(c: &Context) {
                         println!("{}", str_rep);
                         w_cid(cid.to_string(), log_file(&"n1"), true);
                     }
-                } else if com == "coin" {
+                } else if com == "coin" || com == "/coin" {
                     let output = Command::new(data_scpt(&"ai"))
                         .arg(&"atproto").arg(&"coin")
                         .arg(&handle)
