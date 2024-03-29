@@ -17,10 +17,10 @@ use crate::data::Notify;
 
 pub fn c_bot(c: &Context) {
     let h = async {
-        let mut notify = notify::get_request(100).await;
+        let mut notify = notify::get_request(50).await;
         if notify == "err" {
             refresh(c);
-            notify = notify::get_request(100).await;
+            notify = notify::get_request(50).await;
         }
         let notify: Notify = serde_json::from_str(&notify).unwrap();
         let host = data_toml(&"host");
@@ -52,6 +52,7 @@ pub fn c_bot(c: &Context) {
             let vec: Vec<&str> = text.split_whitespace().collect();
             let handlev: Vec<&str> = handle.split('.').collect();
             let mut handlev = handlev[0].trim().to_string();
+            let mut ten_p = "false";
 
             let mut link = "https://card.syui.ai/".to_owned() + &handlev;
             let s = 0;
@@ -321,8 +322,15 @@ pub fn c_bot(c: &Context) {
                     let d = String::from_utf8_lossy(&output.stdout);
                     let dd = "\n".to_owned() + &d.to_string();
                     let text_limit = c_char(dd);
-                    if text_limit.len() > 3 {
-                        handlev = d.lines().collect::<Vec<_>>()[0].to_string();
+                    handlev = d.lines().collect::<Vec<_>>()[0].to_string();
+                    let ten_l = d.lines().collect::<Vec<_>>().len();
+                    println!("handlev {}", handlev);
+                    println!("ten_l {}", ten_l);
+                    if ten_l == 3 {
+                        ten_p = d.lines().collect::<Vec<_>>()[1];
+                        println!("ten_p {}", ten_p);
+                    }
+                    if ten_p != "true" {
                         link = "https://card.syui.ai/".to_owned() + &handlev;
                         e = link.chars().count();
                         let str_rep = reply_link::post_request(
@@ -335,10 +343,10 @@ pub fn c_bot(c: &Context) {
                             cid_root.to_string(),
                             uri_root.to_string(),
                         )
-                        .await;
+                            .await;
                         println!("{}", str_rep);
-                        w_cid(cid.to_string(), log_file(&"n1"), true);
                     }
+                    w_cid(cid.to_string(), log_file(&"n1"), true);
                 } else if com == "coin" || com == "/coin" {
                     let output = Command::new(data_scpt(&"ai"))
                         .arg(&"atproto").arg(&"coin")
