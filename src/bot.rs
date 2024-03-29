@@ -154,7 +154,7 @@ pub fn c_bot(c: &Context) {
                     || com.contains("うらない") == true
                     || com.contains("うらなって") == true
                 {
-                    let output = Command::new(data_scpt(&"ai"))
+                    let _output = Command::new(data_scpt(&"ai"))
                         .arg(&"atproto").arg(&"fortune")
                         .arg(&handle)
                         .arg(&did)
@@ -167,13 +167,7 @@ pub fn c_bot(c: &Context) {
                         .arg(&prompt_sub)
                         .output()
                         .expect("zsh");
-                    let d = String::from_utf8_lossy(&output.stdout);
-                    let d = d.to_string();
-                    let text_limit = c_char(d);
-                    if text_limit.len() > 3 {
-                        println!("{}", text_limit);
-                        w_cid(cid.to_string(), log_file(&"n1"), true);
-                    }
+                    w_cid(cid.to_string(), log_file(&"n1"), true);
                 } else if com == "card" || com == "/card" {
                     let output = Command::new(data_scpt(&"ai"))
                         .arg(&"atproto").arg(&"card")
