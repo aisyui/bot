@@ -94,6 +94,16 @@ pub fn c_bot(c: &Context) {
                 admin = c.string_flag("admin").unwrap();
             }
 
+            let mut manga_uri = "".to_string();
+            if c.string_flag("manga_uri").is_ok() {
+                manga_uri = c.string_flag("manga_uri").unwrap();
+            }
+
+            let mut avatar = "".to_string();
+            if let Some(v) = &n[i].author.avatar {
+                avatar = v.to_string();
+            }
+
             if check_cid == false && { reason == "mention" || reason == "reply" }
                 || check_cid_run == false && { reason == "mention" || reason == "reply" }
             {
@@ -446,6 +456,34 @@ pub fn c_bot(c: &Context) {
                         println!("{}", str_rep);
                         w_cid(cid.to_string(), log_file(&"n1"), true);
                     }
+                } else if uri_root == &manga_uri {
+                    println!("manga_uri:{}", manga_uri);
+                    let output = Command::new(data_scpt(&"ai"))
+                        .arg(&"atproto").arg(&"manga")
+                        .arg(&handle)
+                        .arg(&did)
+                        .arg(&cid)
+                        .arg(&uri)
+                        .arg(&cid_root)
+                        .arg(&uri_root)
+                        .arg(&host)
+                        .arg(&avatar)
+                        .arg(&prompt_chat)
+                        .output()
+                        .expect("zsh");
+                    let d = String::from_utf8_lossy(&output.stdout);
+                    let d = d.to_string();
+                    let text_limit = c_char(d);
+                    let str_rep = reply::post_request(
+                        text_limit.to_string(),
+                        cid.to_string(),
+                        uri.to_string(),
+                        cid_root.to_string(),
+                        uri_root.to_string(),
+                    )
+                        .await;
+                    println!("{}", str_rep);
+                    w_cid(cid.to_string(), log_file(&"n1"), true);
                 } else {
                     // openai
                     let str_openai = openai::post_request(prompt_chat.to_string()).await;
@@ -457,7 +495,7 @@ pub fn c_bot(c: &Context) {
                         cid_root.to_string(),
                         uri_root.to_string(),
                     )
-                    .await;
+                        .await;
                     println!("{}", str_rep);
                     w_cid(cid.to_string(), log_file(&"n1"), true);
                 }

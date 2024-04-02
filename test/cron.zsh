@@ -1,7 +1,7 @@
 function cron() {
-	t=`docker ps |grep aios|grep Up`
+	t=`docker ps |grep aios|grep R`
 	if [ -z "$t" ];then
-		docker compose up -d
+		exit
 	fi
-	exit
+	docker compose up -d
 }

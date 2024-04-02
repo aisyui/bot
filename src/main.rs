@@ -59,6 +59,9 @@ fn main() {
                 Flag::new("admin", FlagType::String)
                 .alias("a"),
             )
+            .flag(
+                Flag::new("manga_uri", FlagType::String)
+            )
         )
         .command(
             Command::new("follow_all")
