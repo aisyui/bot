@@ -146,7 +146,7 @@ pub fn c_bot(c: &Context) {
                         .await;
                     w_cid(cid.to_string(), log_file(&"n1"), true);
                     println!("{}", str_rep);
-                } else if com == "diffusers"  || com == "/diffusers" {
+                } else if { com == "diffusers"  || com == "/diffusers" } && handle == &admin{
                     let _output = Command::new(data_scpt(&"ai"))
                         .arg(&"atproto").arg(&"diffusers")
                         .arg(&handle)
@@ -393,7 +393,7 @@ pub fn c_bot(c: &Context) {
                         println!("{}", str_rep);
                         w_cid(cid.to_string(), log_file(&"n1"), true);
                     }
-                } else if com == "sh" && handle == &admin {
+                } else if { com == "sh" || com == "/sh" } && handle == &admin {
                     println!("admin:{}", admin);
                     let output = Command::new(data_scpt(&"ai"))
                         .arg(&"atproto").arg(&"sh")
