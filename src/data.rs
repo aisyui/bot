@@ -123,6 +123,7 @@ pub struct BaseUrl {
     pub follow: String,
     pub follows: String,
     pub followers: String,
+    pub feed_get: String,
 }
 
 pub fn url(s: &str) -> String {
@@ -148,6 +149,7 @@ pub fn url(s: &str) -> String {
         session_refresh: "com.atproto.server.refreshSession".to_string(),
         session_get: "com.atproto.server.getSession".to_string(),
         timeline_get: "app.bsky.feed.getTimeline".to_string(),
+        feed_get: "app.bsky.feed.getFeed".to_string(),
         timeline_author: "app.bsky.feed.getAuthorFeed".to_string(),
         like: "app.bsky.feed.like".to_string(),
         repost: "app.bsky.feed.repost".to_string(),
@@ -187,6 +189,7 @@ pub fn url(s: &str) -> String {
         "follow" => t.to_string() + &baseurl.follow,
         "follows" => t.to_string() + &baseurl.follows,
         "followers" => t.to_string() + &baseurl.followers,
+        "feed_get" => t.to_string() + &baseurl.feed_get,
         _ => s,
     }
 }

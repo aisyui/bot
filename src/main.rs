@@ -3,6 +3,7 @@ use std::env;
 
 use crate::ascii::c_ascii;
 use crate::bot::c_bot;
+use crate::bot::c_bot_feed;
 use crate::data::c_follow_all;
 use crate::data::c_openai_key;
 use crate::data::data_toml;
@@ -37,6 +38,8 @@ pub mod repost;
 pub mod session;
 pub mod timeline_author;
 pub mod token;
+pub mod feed_get;
+pub mod delete_record;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -58,6 +61,10 @@ fn main() {
             .flag(
                 Flag::new("admin", FlagType::String)
                 .alias("a"),
+            )
+            .flag(
+                Flag::new("feed", FlagType::String)
+                .alias("f"),
             )
             .flag(
                 Flag::new("manga_uri", FlagType::String)
@@ -99,6 +106,12 @@ fn main() {
             .action(timeline),
         )
         .command(
+            Command::new("feed")
+            .description("feed <feed-uri>")
+            .alias("f")
+            .action(feed)
+            )
+        .command(
             Command::new("did")
             .description("did <handle>")
             .action(did)
@@ -111,6 +124,16 @@ fn main() {
             .flag(
                 Flag::new("link", FlagType::String)
                 .alias("l"),
+            )
+        )
+        .command(
+            Command::new("delete")
+            .description("d <rkey>")
+            .alias("d")
+            .action(delete)
+            .flag(
+                Flag::new("col", FlagType::String)
+                .alias("c"),
             )
         )
         .command(
@@ -274,6 +297,7 @@ fn bot(c: &Context) {
     refresh(c);
     loop {
         c_bot(c);
+        c_bot_feed(c);
     }
 }
 
@@ -337,6 +361,22 @@ fn notify(c: &Context) {
     return res;
 }
 
+fn feed(c: &Context) {
+    refresh(c);
+    let feed_d = "at://did:plc:4hqjfn7m6n5hno3doamuhgef/app.bsky.feed.generator/cmd".to_string();
+    let h = async {
+        if c.args.len() == 0 {
+            let j = feed_get::get_request(feed_d).await;
+            println!("{}", j);
+        } else {
+            let j = feed_get::get_request(c.args[0].to_string()).await;
+            println!("{}", j);
+        }
+    };
+    let res = tokio::runtime::Runtime::new().unwrap().block_on(h);
+    return res;
+}
+
 fn did(c: &Context) {
     refresh(c);
     let h = async {
@@ -379,6 +419,19 @@ fn post(c: &Context) {
             println!("{}", str.await);
         } else {
             let str = post::post_request(m.to_string());
+            println!("{}", str.await);
+        }
+    };
+    let res = tokio::runtime::Runtime::new().unwrap().block_on(h);
+    return res;
+}
+
+fn delete(c: &Context) {
+    refresh(c);
+    let m = c.args[0].to_string();
+    let h = async {
+        if let Ok(col) = c.string_flag("col") {
+            let str = delete_record::post_request(m.to_string(), col);
             println!("{}", str.await);
         }
     };

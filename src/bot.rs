@@ -7,6 +7,7 @@ use crate::openai;
 use crate::refresh;
 use crate::reply;
 use crate::reply_link;
+use crate::feed_get;
 
 use crate::data::c_char;
 use crate::data::data_scpt;
@@ -14,6 +15,7 @@ use crate::data::data_toml;
 use crate::data::log_file;
 use crate::data::w_cid;
 use crate::data::Notify;
+use crate::data::Timeline;
 
 pub fn c_bot(c: &Context) {
     let h = async {
@@ -108,7 +110,7 @@ pub fn c_bot(c: &Context) {
                 || check_cid_run == false && { reason == "mention" || reason == "reply" }
             {
                 w_cid(cid.to_string(), log_file(&"n2"), true);
-                if com == "did" {
+                if com == "did" || com == "/did" {
                     let link = "https://plc.directory/".to_owned() + &did + &"/log";
                     let s = 0;
                     let e = link.chars().count();
@@ -393,6 +395,34 @@ pub fn c_bot(c: &Context) {
                         println!("{}", str_rep);
                         w_cid(cid.to_string(), log_file(&"n1"), true);
                     }
+                } else if com == "quiz" || com == "/quiz" {
+                    println!("admin:{}", admin);
+                    let output = Command::new(data_scpt(&"ai"))
+                        .arg(&"atproto").arg(&"quiz")
+                        .arg(&handle)
+                        .arg(&did)
+                        .arg(&cid)
+                        .arg(&uri)
+                        .arg(&cid_root)
+                        .arg(&uri_root)
+                        .arg(&host)
+                        .arg(&prompt)
+                        .arg(&prompt_sub)
+                        .output()
+                        .expect("zsh");
+                    let d = String::from_utf8_lossy(&output.stdout);
+                    let d = d.to_string();
+                    let text_limit = c_char(d);
+                    let str_rep = reply::post_request(
+                        text_limit.to_string(),
+                        cid.to_string(),
+                        uri.to_string(),
+                        cid_root.to_string(),
+                        uri_root.to_string(),
+                    )
+                    .await;
+                    println!("{}", str_rep);
+                    w_cid(cid.to_string(), log_file(&"n1"), true);
                 } else if { com == "sh" || com == "/sh" } && handle == &admin {
                     println!("admin:{}", admin);
                     let output = Command::new(data_scpt(&"ai"))
@@ -421,7 +451,7 @@ pub fn c_bot(c: &Context) {
                     .await;
                     println!("{}", str_rep);
                     w_cid(cid.to_string(), log_file(&"n1"), true);
-                } else if com == "mitractl" && handle == &admin {
+                } else if { com == "mitractl" || com == "/mitractl" } && handle == &admin {
                     println!("admin:{}", admin);
                     let output = Command::new(data_scpt(&"ai"))
                         .arg(&"atproto").arg(&"mitra")
@@ -501,6 +531,502 @@ pub fn c_bot(c: &Context) {
                 }
                 let str_notify = notify_read::post_request(time.to_string()).await;
                 println!("{}", str_notify);
+                println!("---");
+            }
+        }
+    };
+    let res = tokio::runtime::Runtime::new().unwrap().block_on(h);
+    return res;
+}
+
+pub fn c_bot_feed(c: &Context) {
+    let mut feed = "at://did:plc:4hqjfn7m6n5hno3doamuhgef/app.bsky.feed.generator/cmd".to_string();
+    if c.string_flag("feed").is_ok() {
+        feed = c.string_flag("feed").unwrap();
+    }
+    let h = async {
+        let mut notify = feed_get::get_request(feed).await;
+        if notify == "err" {
+            refresh(c);
+            notify = feed_get::get_request("at://did:plc:4hqjfn7m6n5hno3doamuhgef/app.bsky.feed.generator/cmd".to_string()).await;
+        }
+        let timeline: Timeline = serde_json::from_str(&notify).unwrap();
+        let n = timeline.feed;
+        let host = data_toml(&"host");
+        let length = &n.len();
+        let su = 0..*length;
+        for i in su {
+            let handle = &n[i].post.author.handle;
+            let did = &n[i].post.author.did;
+            let cid = &n[i].post.cid;
+            let uri = &n[i].post.uri;
+            let _time = &n[i].post.indexedAt;
+            let cid_root = cid;
+            let uri_root = uri;
+            let check_cid = w_cid(cid.to_string(), log_file(&"n1"), false);
+            let check_cid_run = w_cid(cid.to_string(), log_file(&"n2"), false);
+
+            let mut text = "";
+            if !n[i].post.record.text.is_none() {
+                text = &n[i].post.record.text.as_ref().unwrap();
+            }
+            //let mut reason = false;
+            //if !n[i].post.record.reply.is_none() {
+            //    reason = true;
+            //}
+            let vec: Vec<&str> = text.split_whitespace().collect();
+            let handlev: Vec<&str> = handle.split('.').collect();
+            let mut handlev = handlev[0].trim().to_string();
+            let mut ten_p = "false";
+
+            let mut link = "https://card.syui.ai/".to_owned() + &handlev;
+            let s = 0;
+            let mut e = link.chars().count();
+
+            let com = vec[0].trim().to_string();
+            let mut prompt = "".to_string();
+            let mut prompt_sub = "".to_string();
+            let mut prompt_chat = "".to_string();
+            let mut prompt_all = "".to_string();
+
+            if com == "@ai" || com == "/ai" {
+                prompt_chat = vec[1..].join(" ");
+            } else {
+                prompt = vec[1..].join(" ");
+                prompt_all = vec[0..].join(" ");
+                if vec.len() > 1 {
+                    prompt_sub = vec[2..].join(" ");
+                }
+            }
+
+            if prompt.is_empty() == false || com.is_empty() == false {
+                println!("{}", handle);
+                println!(
+                    "cid:{}\nuri:{}\ncid_root:{}\nuri_root:{}\nhost:{}",
+                    cid, uri, cid_root, uri_root, host
+                );
+                println!("prompt_sub:{}", prompt_sub);
+            }
+
+            let mut admin = "".to_string();
+            if c.string_flag("admin").is_ok() {
+                admin = c.string_flag("admin").unwrap();
+            }
+
+            if check_cid == false
+            || check_cid_run == false
+            {
+                w_cid(cid.to_string(), log_file(&"n2"), true);
+                if com == "did" || com == "/did" {
+                    let link = "https://plc.directory/".to_owned() + &did + &"/log";
+                    let s = 0;
+                    let e = link.chars().count();
+                    let d = "\n".to_owned() + &did.to_string();
+                    let text_limit = c_char(d);
+                    if text_limit.len() > 3 {
+                        let str_rep = reply_link::post_request(
+                            text_limit.to_string(),
+                            link.to_string(),
+                            s,
+                            e.try_into().unwrap(),
+                            cid.to_string(),
+                            uri.to_string(),
+                            cid_root.to_string(),
+                            uri_root.to_string(),
+                        )
+                            .await;
+                        w_cid(cid.to_string(), log_file(&"n1"), true);
+                        println!("{}", str_rep);
+                    }
+                } else if com == "help" || com == "/help" {
+                    let link = "https://git.syui.ai/ai/bot/wiki/help".to_string();
+                    let s = 0;
+                    let e = link.chars().count();
+                    let str_rep = reply_link::post_request(
+                        "\n".to_string(),
+                        link.to_string(),
+                        s,
+                        e.try_into().unwrap(),
+                        cid.to_string(),
+                        uri.to_string(),
+                        cid_root.to_string(),
+                        uri_root.to_string(),
+                    )
+                        .await;
+                    w_cid(cid.to_string(), log_file(&"n1"), true);
+                    println!("{}", str_rep);
+                } else if { com == "diffusers"  || com == "/diffusers" } && handle == &admin{
+                    let _output = Command::new(data_scpt(&"ai"))
+                        .arg(&"atproto").arg(&"diffusers")
+                        .arg(&handle)
+                        .arg(&did)
+                        .arg(&cid)
+                        .arg(&uri)
+                        .arg(&cid_root)
+                        .arg(&uri_root)
+                        .arg(&host)
+                        .arg(&prompt)
+                        .arg(&prompt_sub)
+                        .output()
+                        .expect("zsh");
+                    w_cid(cid.to_string(), log_file(&"n1"), true);
+                } else if com.contains("/占") == true
+                    || com.contains("/うらない") == true
+                        || com.contains("/うらなって") == true
+                {
+                    let _output = Command::new(data_scpt(&"ai"))
+                        .arg(&"atproto").arg(&"fortune")
+                        .arg(&handle)
+                        .arg(&did)
+                        .arg(&cid)
+                        .arg(&uri)
+                        .arg(&cid_root)
+                        .arg(&uri_root)
+                        .arg(&host)
+                        .arg(&prompt)
+                        .arg(&prompt_sub)
+                        .output()
+                        .expect("zsh");
+                    w_cid(cid.to_string(), log_file(&"n1"), true);
+                } else if prompt_all.contains("アイ") == true
+                    || prompt_all.contains("うらな") == true
+                        || prompt_all.contains("占") == true
+                {
+                    if prompt_all.contains("うらな") == true || prompt_all.contains("占") == true {
+                        let _output = Command::new(data_scpt(&"ai"))
+                            .arg(&"atproto").arg(&"fortune")
+                            .arg(&handle)
+                            .arg(&did)
+                            .arg(&cid)
+                            .arg(&uri)
+                            .arg(&cid_root)
+                            .arg(&uri_root)
+                            .arg(&host)
+                            .arg(&prompt)
+                            .arg(&prompt_sub)
+                            .output()
+                            .expect("zsh");
+                    }
+                    w_cid(cid.to_string(), log_file(&"n1"), true);
+                } else if com == "card" || com == "/card" {
+                    let output = Command::new(data_scpt(&"ai"))
+                        .arg(&"atproto").arg(&"card")
+                        .arg(&handle)
+                        .arg(&did)
+                        .arg(&cid)
+                        .arg(&uri)
+                        .arg(&cid_root)
+                        .arg(&uri_root)
+                        .arg(&host)
+                        .arg(&prompt)
+                        .arg(&prompt_sub)
+                        .output()
+                        .expect("zsh");
+                    let d = String::from_utf8_lossy(&output.stdout);
+                    let dd = "\n".to_owned() + &d.to_string();
+                    let text_limit = c_char(dd);
+                    if text_limit.len() > 3 {
+                        //handlev = handle.replace(".", "-").to_string();
+                        handlev = d.lines().collect::<Vec<_>>()[0].to_string();
+                        link = "https://card.syui.ai/".to_owned() + &handlev;
+                        e = link.chars().count();
+                        let str_rep = reply_link::post_request(
+                            text_limit.to_string(),
+                            link.to_string(),
+                            s,
+                            e.try_into().unwrap(),
+                            cid.to_string(),
+                            uri.to_string(),
+                            cid_root.to_string(),
+                            uri_root.to_string(),
+                        )
+                            .await;
+                        println!("{}", str_rep);
+                        w_cid(cid.to_string(), log_file(&"n1"), true);
+                    }
+                } else if com == "fav" || com == "/fav" {
+                    let output = Command::new(data_scpt(&"ai"))
+                        .arg(&"atproto").arg(&"fav")
+                        .arg(&handle)
+                        .arg(&did)
+                        .arg(&cid)
+                        .arg(&uri)
+                        .arg(&cid_root)
+                        .arg(&uri_root)
+                        .arg(&host)
+                        .arg(&prompt)
+                        .arg(&prompt_sub)
+                        .output()
+                        .expect("zsh");
+                    let d = String::from_utf8_lossy(&output.stdout);
+                    let dd = "\n".to_owned() + &d.to_string();
+                    let text_limit = c_char(dd);
+                    if text_limit.len() > 3 {
+                        handlev = d.lines().collect::<Vec<_>>()[0].to_string();
+                        link = "https://card.syui.ai/".to_owned() + &handlev;
+                        e = link.chars().count();
+                        let str_rep = reply_link::post_request(
+                            text_limit.to_string(),
+                            link.to_string(),
+                            s,
+                            e.try_into().unwrap(),
+                            cid.to_string(),
+                            uri.to_string(),
+                            cid_root.to_string(),
+                            uri_root.to_string(),
+                        )
+                            .await;
+                        println!("{}", str_rep);
+                        w_cid(cid.to_string(), log_file(&"n1"), true);
+                    }
+                } else if com == "egg"  || com == "/egg" {
+                    let output = Command::new(data_scpt(&"ai"))
+                        .arg(&"atproto").arg(&"egg")
+                        .arg(&handle)
+                        .arg(&did)
+                        .arg(&cid)
+                        .arg(&uri)
+                        .arg(&cid_root)
+                        .arg(&uri_root)
+                        .arg(&host)
+                        .arg(&prompt)
+                        .arg(&prompt_sub)
+                        .output()
+                        .expect("zsh");
+                    let d = String::from_utf8_lossy(&output.stdout);
+                    let dd = "\n".to_owned() + &d.to_string();
+                    let text_limit = c_char(dd);
+                    if text_limit.len() > 3 {
+                        handlev = d.lines().collect::<Vec<_>>()[0].to_string();
+                        link = "https://card.syui.ai/".to_owned() + &handlev;
+                        e = link.chars().count();
+                        let str_rep = reply_link::post_request(
+                            text_limit.to_string(),
+                            link.to_string(),
+                            s,
+                            e.try_into().unwrap(),
+                            cid.to_string(),
+                            uri.to_string(),
+                            cid_root.to_string(),
+                            uri_root.to_string(),
+                        )
+                            .await;
+                        println!("{}", str_rep);
+                        w_cid(cid.to_string(), log_file(&"n1"), true);
+                    }
+                } else if com == "nyan" || com == "/nyan" {
+                    let output = Command::new(data_scpt(&"ai"))
+                        .arg(&"atproto").arg(&"nyan")
+                        .arg(&handle)
+                        .arg(&did)
+                        .arg(&cid)
+                        .arg(&uri)
+                        .arg(&cid_root)
+                        .arg(&uri_root)
+                        .arg(&host)
+                        .arg(&prompt)
+                        .arg(&prompt_sub)
+                        .output()
+                        .expect("zsh");
+                    let d = String::from_utf8_lossy(&output.stdout);
+                    let dd = "\n".to_owned() + &d.to_string();
+                    let text_limit = c_char(dd);
+                    println!("{}", text_limit);
+                    if text_limit.len() > 3 {
+                        let str_rep = reply::post_request(
+                            text_limit.to_string(),
+                            cid.to_string(),
+                            uri.to_string(),
+                            cid_root.to_string(),
+                            uri_root.to_string(),
+                        )
+                            .await;
+                        println!("{}", str_rep);
+                        w_cid(cid.to_string(), log_file(&"n1"), true);
+                    }
+                } else if com == "ten" || com == "/ten" {
+                    let output = Command::new(data_scpt(&"ai"))
+                        .arg(&"atproto").arg(&"ten")
+                        .arg(&handle)
+                        .arg(&did)
+                        .arg(&cid)
+                        .arg(&uri)
+                        .arg(&cid_root)
+                        .arg(&uri_root)
+                        .arg(&host)
+                        .arg(&prompt)
+                        .arg(&prompt_sub)
+                        .output()
+                        .expect("zsh");
+                    let d = String::from_utf8_lossy(&output.stdout);
+                    let dd = "\n".to_owned() + &d.to_string();
+                    let text_limit = c_char(dd);
+                    handlev = d.lines().collect::<Vec<_>>()[0].to_string();
+                    let ten_l = d.lines().collect::<Vec<_>>().len();
+                    println!("handlev {}", handlev);
+                    println!("ten_l {}", ten_l);
+                    if ten_l == 3 {
+                        ten_p = d.lines().collect::<Vec<_>>()[1];
+                        println!("ten_p {}", ten_p);
+                    }
+                    if ten_p != "true" {
+                        link = "https://card.syui.ai/".to_owned() + &handlev;
+                        e = link.chars().count();
+                        let str_rep = reply_link::post_request(
+                            text_limit.to_string(),
+                            link.to_string(),
+                            s,
+                            e.try_into().unwrap(),
+                            cid.to_string(),
+                            uri.to_string(),
+                            cid_root.to_string(),
+                            uri_root.to_string(),
+                        )
+                            .await;
+                        println!("{}", str_rep);
+                    }
+                    w_cid(cid.to_string(), log_file(&"n1"), true);
+                } else if com == "coin" || com == "/coin" {
+                    let output = Command::new(data_scpt(&"ai"))
+                        .arg(&"atproto").arg(&"coin")
+                        .arg(&handle)
+                        .arg(&did)
+                        .arg(&cid)
+                        .arg(&uri)
+                        .arg(&cid_root)
+                        .arg(&uri_root)
+                        .arg(&host)
+                        .arg(&prompt)
+                        .arg(&prompt_sub)
+                        .output()
+                        .expect("zsh");
+                    let d = String::from_utf8_lossy(&output.stdout);
+                    let dd = "\n".to_owned() + &d.to_string();
+                    let text_limit = c_char(dd);
+                    handlev = d.lines().collect::<Vec<_>>()[0].to_string();
+                    link = "https://card.syui.ai/".to_owned() + &handlev;
+                    println!("{}", e);
+                    e = link.chars().count();
+                    if text_limit.len() > 3 {
+                        let str_rep = reply_link::post_request(
+                            text_limit.to_string(),
+                            link.to_string(),
+                            s,
+                            e.try_into().unwrap(),
+                            cid.to_string(),
+                            uri.to_string(),
+                            cid_root.to_string(),
+                            uri_root.to_string(),
+                        )
+                            .await;
+                        println!("{}", str_rep);
+                        w_cid(cid.to_string(), log_file(&"n1"), true);
+                    }
+                } else if { com == "sh" || com == "/sh" } && handle == &admin {
+                    println!("admin:{}", admin);
+                    let output = Command::new(data_scpt(&"ai"))
+                        .arg(&"atproto").arg(&"sh")
+                        .arg(&handle)
+                        .arg(&did)
+                        .arg(&cid)
+                        .arg(&uri)
+                        .arg(&cid_root)
+                        .arg(&uri_root)
+                        .arg(&host)
+                        .arg(&prompt)
+                        .arg(&prompt_sub)
+                        .output()
+                        .expect("zsh");
+                    let d = String::from_utf8_lossy(&output.stdout);
+                    let d = d.to_string();
+                    let text_limit = c_char(d);
+                    let str_rep = reply::post_request(
+                        text_limit.to_string(),
+                        cid.to_string(),
+                        uri.to_string(),
+                        cid_root.to_string(),
+                        uri_root.to_string(),
+                    )
+                        .await;
+                    println!("{}", str_rep);
+                    w_cid(cid.to_string(), log_file(&"n1"), true);
+                } else if com == "quiz" || com == "/quiz" {
+                    println!("admin:{}", admin);
+                    let output = Command::new(data_scpt(&"ai"))
+                        .arg(&"atproto").arg(&"quiz")
+                        .arg(&handle)
+                        .arg(&did)
+                        .arg(&cid)
+                        .arg(&uri)
+                        .arg(&cid_root)
+                        .arg(&uri_root)
+                        .arg(&host)
+                        .arg(&prompt)
+                        .arg(&prompt_sub)
+                        .output()
+                        .expect("zsh");
+                    let d = String::from_utf8_lossy(&output.stdout);
+                    let d = d.to_string();
+                    let text_limit = c_char(d);
+                    let str_rep = reply::post_request(
+                        text_limit.to_string(),
+                        cid.to_string(),
+                        uri.to_string(),
+                        cid_root.to_string(),
+                        uri_root.to_string(),
+                    )
+                        .await;
+                    println!("{}", str_rep);
+                    w_cid(cid.to_string(), log_file(&"n1"), true);
+                } else if { com == "mitractl" || com == "/mitractl" } && handle == &admin {
+                    println!("admin:{}", admin);
+                    let output = Command::new(data_scpt(&"ai"))
+                        .arg(&"atproto").arg(&"mitra")
+                        .arg(&handle)
+                        .arg(&did)
+                        .arg(&cid)
+                        .arg(&uri)
+                        .arg(&cid_root)
+                        .arg(&uri_root)
+                        .arg(&host)
+                        .arg(&prompt)
+                        .arg(&prompt_sub)
+                        .output()
+                        .expect("zsh");
+                    let d = String::from_utf8_lossy(&output.stdout);
+                    let d = "\n".to_owned() + &d.to_string();
+                    let text_limit = c_char(d);
+                    link = "https://m.syu.is".to_string();
+                    e = link.chars().count();
+                    if text_limit.len() > 3 {
+                        let str_rep = reply_link::post_request(
+                            text_limit.to_string(),
+                            link.to_string(),
+                            s,
+                            e.try_into().unwrap(),
+                            cid.to_string(),
+                            uri.to_string(),
+                            cid_root.to_string(),
+                            uri_root.to_string(),
+                        )
+                            .await;
+                        println!("{}", str_rep);
+                        w_cid(cid.to_string(), log_file(&"n1"), true);
+                    }
+                } else if com == "@ai" || com == "/ai" {
+                    let str_openai = openai::post_request(prompt_chat.to_string()).await;
+                    let text_limit = c_char(str_openai);
+                    let str_rep = reply::post_request(
+                        text_limit.to_string(),
+                        cid.to_string(),
+                        uri.to_string(),
+                        cid_root.to_string(),
+                        uri_root.to_string(),
+                    )
+                        .await;
+                    println!("{}", str_rep);
+                    w_cid(cid.to_string(), log_file(&"n1"), true);
+                }
                 println!("---");
             }
         }

@@ -63,15 +63,19 @@ $ ai bot
 
 |command|sub|type|link|auth|
 |---|---|---|---|---|
-|@yui.syui.ai did||mention, reply| [plc.directory](https://plc.directory)/$did/log |user|
-|@yui.syui.ai card|r, s, b|mention, reply| [card.syui.ai](https://card.syui.ai) |user|
-|@yui.syui.ai ten|start, d, p, coin|mention, reply| [card.syui.ai](https://card.syui.ai)  |user|
-|@yui.syui.ai fav|{cid}|mention, reply| [card.syui.ai](https://card.syui.ai)  |user|
-|@yui.syui.ai egg|{password}|mention, reply| [card.syui.ai](https://card.syui.ai)  |user|
-|@yui.syui.ai 占い||mention, reply| [yui.syui.ai](https://yui.syui.ai) |user|
-|@yui.syui.ai nyan|🍬|mention, reply| [yui.syui.ai](https://yui.syui.ai) |user|
-|@yui.syui.ai diffusers|{keyword}|mention, reply| [huggingface.co/diffusers](https://huggingface.co/docs/diffusers/index) |user|
-|@yui.syui.ai sh|{command}|mention, reply| [archlinux.org](https://wiki.archlinux.org/title/Systemd-nspawn) |admin|
+|/did||mention, reply| [plc.directory](https://plc.directory)/$did/log |user|
+|/card|r, s, b|mention, reply| [card.syui.ai](https://card.syui.ai) |user|
+|/ten|start, close, d, p|mention, reply| [card.syui.ai](https://card.syui.ai)  |user|
+|/fav|{cid}|mention, reply| [card.syui.ai](https://card.syui.ai)  |user|
+|/egg|{password}|mention, reply| [card.syui.ai](https://card.syui.ai)  |user|
+|/nyan|🍬|mention, reply| [yui.syui.ai](https://yui.syui.ai) |user|
+|/diffusers|{keyword}|mention, reply| [huggingface.co/diffusers](https://huggingface.co/docs/diffusers/index) |user|
+|/sh|{command}|mention, reply| [archlinux.org](https://wiki.archlinux.org/title/Systemd-nspawn) |admin|
+|/占い||mention, reply| [yui.syui.ai](https://yui.syui.ai) |user|
+
+```sh
+@yui.syui.ai /did
+```
 
 ### test
 
@@ -87,7 +91,6 @@ $ ./test/ai.zsh t
 $ cargo install --force cargo-make
 $ cargo make build
 ```
-
 
 ### docker
 
