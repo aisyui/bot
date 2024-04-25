@@ -72,11 +72,31 @@ $ curl -sLO https://raw.githubusercontent.com/rdmurphy/atproto-openapi-types/mai
 $ .config/ai/scpt/test/pds.zsh e
 ``` 
 
-## manga
+## cmt
+
+blogなどにblueskyアカウントのpostを表示します。
+
+以下でbotがblogのコメントシステムを開きます。
 
 ```sh
-$ ai bot --manga_uri at://did:plc:dconvttcori3mrh2wrmehvwt/app.bsky.feed.post/3kp4zdnlo5s2j
+@yui.syui.ai /comment https://syui.ai/blog/post/2024/04/25/bluesky/
 ```
+
+開いたbotのpostに返信することで、特定のblog path上でpostを表示します。
+
+<blockquote class="bluesky-embed" data-bluesky-uri="at://did:plc:4hqjfn7m6n5hno3doamuhgef/app.bsky.feed.post/3kqxbtmwlje2h" data-bluesky-cid="bafyreiasxp5g3nkkd6g7lxh55qaxcc7ylefaljmbcp627nu2geks62c57m"><p lang="">please reply with your comments here ↓ 
+</p>&mdash; ai (<a href="https://bsky.app/profile/did:plc:4hqjfn7m6n5hno3doamuhgef?ref_src=embed">@yui.syui.ai</a>) <a href="https://bsky.app/profile/did:plc:4hqjfn7m6n5hno3doamuhgef/post/3kqxbtmwlje2h?ref_src=embed">Apr 25, 2024 at 20:18</a></blockquote><script async src="https://embed.bsky.app/static/embed.js" charset="utf-8"></script>
+
+```ts
+<link href="https://syui.ai/js/comment/app.js" rel="preload" as="script">
+<link href="https://syui.ai/js/comment/chunk-vendors.js" rel="preload" as="script">
+<div id="comment"></div>
+<script async src="https://embed.bsky.app/static/embed.js" charset="utf-8"></script>
+<script src="https://syui.ai/js/comment/chunk-vendors.js"></script>
+<script src="https://syui.ai/js/comment/app.js"></script>
+```
+
+## example json
 
 ```json
 [
@@ -163,10 +183,6 @@ $ ai bot --manga_uri at://did:plc:dconvttcori3mrh2wrmehvwt/app.bsky.feed.post/3k
       "labels": []
 }
 ]
-```
-
-```sh
-$ ai bot -a syui.ai --manga_uri at://did:plc:4hqjfn7m6n5hno3doamuhgef/app.bsky.feed.post/3kp5qn72s232q
 ```
 
 ```json

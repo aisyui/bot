@@ -34,6 +34,7 @@ pub fn log_file(s: &str) -> String {
     match &*s {
         "n1" => f + &"notify_cid.txt",
         "n2" => f + &"notify_cid_run.txt",
+        "c1" => f + &"comment_cid.txt",
         _ => f + &s,
     }
 }

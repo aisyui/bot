@@ -66,9 +66,6 @@ fn main() {
                 Flag::new("feed", FlagType::String)
                 .alias("f"),
             )
-            .flag(
-                Flag::new("manga_uri", FlagType::String)
-            )
         )
         .command(
             Command::new("follow_all")
