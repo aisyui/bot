@@ -570,10 +570,11 @@ pub fn c_bot_feed(c: &Context) {
         feed = c.string_flag("feed").unwrap();
     }
     let h = async {
-        let mut notify = feed_get::get_request(feed).await;
+        let notify = feed_get::get_request(feed).await;
         if notify == "err" {
-            refresh(c);
-            notify = feed_get::get_request("at://did:plc:4hqjfn7m6n5hno3doamuhgef/app.bsky.feed.generator/cmd".to_string()).await;
+            return;
+            //refresh(c);
+            //notify = feed_get::get_request("at://did:plc:4hqjfn7m6n5hno3doamuhgef/app.bsky.feed.generator/cmd".to_string()).await;
         }
         let timeline: Timeline = serde_json::from_str(&notify).unwrap();
         let n = timeline.feed;
