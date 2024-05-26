@@ -65,7 +65,11 @@ pub fn c_bot(c: &Context) {
             let mut prompt = "".to_string();
             let mut prompt_sub = "".to_string();
             let mut prompt_chat = "".to_string();
+            
             if reason == "mention" {
+                if vec.len() == 1 {
+                    return;
+                }
                 com = vec[1].trim().to_string();
                 prompt = vec[2..].join(" ");
                 prompt_chat = vec[1..].join(" ");
