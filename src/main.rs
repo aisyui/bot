@@ -44,6 +44,9 @@ pub mod delete_record;
 fn main() {
     let args: Vec<String> = env::args().collect();
     let app = App::new(env!("CARGO_PKG_NAME"))
+        .author(env!("CARGO_PKG_AUTHORS"))
+        .version(env!("CARGO_PKG_VERSION"))
+        .description(env!("CARGO_PKG_DESCRIPTION"))
         .command(
             Command::new("ai")
             .alias("a")
