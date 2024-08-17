@@ -358,15 +358,12 @@ fn refresh(_c: &Context) {
         let session = session::get_request().await;
         if session == "err" {
             let res = refresh::post_request().await;
-            println!("{}", res);
             if res == "err" {
                 let m = data_toml(&"handle");
                 let p = data_toml(&"password");
                 let s = data_toml(&"host");
-                println!("handle:{}, pass:{}, host:{}", m, p, s);
                 let res = token::post_request(m.to_string(), p.to_string(), s.to_string()).await;
                 w_cfg(&s, &res, &p);
-                println!("res:{}", res);
             } else {
                 w_refresh(&res);
             }

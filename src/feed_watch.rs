@@ -60,7 +60,6 @@ pub fn c_feed_watch(c: &Context) {
 
             if check_cid == false && { prompt.is_empty() == false || com.is_empty() == false } {
                 println!("{}", handle);
-
                 if c.bool_flag("debug") == true {
                     println!(
                         "cid:{}\nuri:{}\ncid_root:{}\nuri_root:{}\nhost:{}\ndid:{}\ncheck_cid:{}",
