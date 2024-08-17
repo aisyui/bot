@@ -5,6 +5,8 @@ use crate::feed_get;
 
 use crate::data::data_toml;
 use crate::data::Timeline;
+use crate::data::log_file;
+use crate::data::w_cid;
 
 pub fn c_feed_watch(c: &Context) {
     let mut feed = "at://did:plc:4hqjfn7m6n5hno3doamuhgef/app.bsky.feed.generator/cmd".to_string();
@@ -29,14 +31,14 @@ pub fn c_feed_watch(c: &Context) {
         let length = &n.len();
         let su = 0..*length;
         for i in su {
+            let cid = &n[i].post.cid;
+            let check_cid = w_cid(cid.to_string(), log_file(&"n1"), false);
             let handle = &n[i].post.author.handle;
             let did = &n[i].post.author.did;
-            let cid = &n[i].post.cid;
             let uri = &n[i].post.uri;
             let _time = &n[i].post.indexedAt;
             let cid_root = cid;
             let uri_root = uri;
-
             let mut text = "";
             if !n[i].post.record.text.is_none() {
                 text = &n[i].post.record.text.as_ref().unwrap();
@@ -56,17 +58,18 @@ pub fn c_feed_watch(c: &Context) {
                 }
             }
 
-            if prompt.is_empty() == false || com.is_empty() == false {
+            if check_cid == false && { prompt.is_empty() == false || com.is_empty() == false } {
                 println!("{}", handle);
 
                 if c.bool_flag("debug") == true {
                     println!(
-                        "cid:{}\nuri:{}\ncid_root:{}\nuri_root:{}\nhost:{}\ndid:{}",
-                        cid, uri, cid_root, uri_root, host, did
+                        "cid:{}\nuri:{}\ncid_root:{}\nuri_root:{}\nhost:{}\ndid:{}\ncheck_cid:{}",
+                        cid, uri, cid_root, uri_root, host, did, check_cid
                     );
                 }
                 println!("{}", prompt_sub);
                 println!("---");
+                w_cid(cid.to_string(), log_file(&"n1"), true);
             }
         }
     };

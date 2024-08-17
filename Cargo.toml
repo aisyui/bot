@@ -1,9 +1,9 @@
 [package]
 name = "ai"
 authors = ["syui"]
-version = "0.0.1"
+version = "0.1.0"
 edition = "2021"
-description = "latest@2024-08-04"
+description = "latest@2024-08-18"
 
 [dependencies]
 seahorse = "*"
