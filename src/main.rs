@@ -11,6 +11,7 @@ use crate::data::data_refresh;
 use crate::data::url;
 use crate::data::w_cfg;
 use crate::data::w_refresh;
+use crate::feed_watch::c_feed_watch;
 
 use data::ProfileIdentityResolve;
 
@@ -39,6 +40,7 @@ pub mod session;
 pub mod timeline_author;
 pub mod token;
 pub mod feed_get;
+pub mod feed_watch;
 pub mod delete_record;
 
 fn main() {
@@ -68,6 +70,22 @@ fn main() {
             .flag(
                 Flag::new("feed", FlagType::String)
                 .alias("f"),
+            )
+        )
+        .command(
+            Command::new("feed_watch")
+            .action(feed_watch)
+            .flag(
+                Flag::new("url", FlagType::String)
+                .alias("u"),
+            )
+            .flag(
+                Flag::new("tag", FlagType::String)
+                .alias("t"),
+            )
+            .flag(
+                Flag::new("debug", FlagType::Bool)
+                .alias("d"),
             )
         )
         .command(
@@ -298,6 +316,13 @@ fn bot(c: &Context) {
     loop {
         c_bot(c);
         c_bot_feed(c);
+    }
+}
+
+fn feed_watch(c: &Context) {
+    refresh(c);
+    loop {
+        c_feed_watch(c);
     }
 }
 

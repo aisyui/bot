@@ -16,6 +16,7 @@ source $d/reply.zsh
 source $d/notify.zsh
 source $d/notify_cid.zsh
 source $d/cron.zsh
+source $d/feed.zsh
 
 case $1 in
 	refresh|r)
@@ -35,5 +36,8 @@ case $1 in
 		;;
 	cid)
 		cid
+		;;
+	feed)
+		feed
 		;;
 esac
