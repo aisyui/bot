@@ -33,7 +33,7 @@ pub async fn post_request(prompt: String) -> String {
         ";
 
     let post = Some(json!({
-    "model": "gpt-3.5-turbo",
+    "model": "gpt-4o-mini",
     "messages": [
     {"role": "system", "content": &setting.to_string()},
     {"role": "user", "content": &prompt.to_string()},
