@@ -146,7 +146,7 @@ fn main() {
         )
         .command(
             Command::new("delete")
-            .description("d <rkey>")
+            .description("d <rkey> -c <collection>")
             .alias("d")
             .action(delete)
             .flag(
