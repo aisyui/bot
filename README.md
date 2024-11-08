@@ -107,3 +107,13 @@ ADMIN=syui.syu.is
 $ docker compose build
 $ docker compose up -d
 ```
+
+## pds
+
+- https://atproto.com/ja/guides/lexicon
+- https://at.syu.is/at/did:plc:uqzpqmrjnptsxezjx4xuh2mn/ai.syui.card/3lagpwihqxi2v
+
+```sh
+# oauth(button)
+[yui]ai.syui.card.verify -> [user]ai.syui.card
+```

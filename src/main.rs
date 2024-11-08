@@ -30,6 +30,8 @@ pub mod notify_read;
 pub mod openai;
 pub mod post;
 pub mod post_link;
+pub mod post_card;
+pub mod post_card_verify;
 pub mod profile;
 pub mod refresh;
 pub mod reply;
@@ -152,6 +154,73 @@ fn main() {
             .flag(
                 Flag::new("col", FlagType::String)
                 .alias("c"),
+            )
+        )
+        .command(
+            Command::new("card")
+            .description("-v <at://verify> -i <int:id> -p <int:cp> -r <int:rank> -c <collection> -a <author> -img <link> -rare <normal>")
+            .action(card)
+            .flag(
+                Flag::new("id", FlagType::Int)
+                .alias("i"),
+            )
+            .flag(
+                Flag::new("cp", FlagType::Int)
+                .alias("p"),
+            )
+            .flag(
+                Flag::new("rank", FlagType::Int)
+                .alias("r"),
+            )
+            .flag(
+                Flag::new("rare", FlagType::Int)
+            )
+            .flag(
+                Flag::new("col", FlagType::String)
+                .alias("c"),
+            )
+            .flag(
+                Flag::new("author", FlagType::String)
+                .alias("a"),
+            )
+            .flag(
+                Flag::new("verify", FlagType::String)
+                .alias("v"),
+            )
+            .flag(
+                Flag::new("img", FlagType::String)
+            )
+        )
+        .command(
+            Command::new("card-verify")
+            .description("<at://verify> -c <collection> -i <id> -p <cp> -r <rank> -rare <normal> -h <syui.ai> -d <did>")
+            .action(card_verify)
+            .flag(
+                Flag::new("col", FlagType::String)
+                .alias("c"),
+            )
+            .flag(
+                Flag::new("id", FlagType::Int)
+                .alias("i"),
+            )
+            .flag(
+                Flag::new("cp", FlagType::Int)
+                .alias("p"),
+            )
+            .flag(
+                Flag::new("rank", FlagType::Int)
+                .alias("r"),
+            )
+            .flag(
+                Flag::new("rare", FlagType::String)
+            )
+            .flag(
+                Flag::new("handle", FlagType::String)
+                .alias("handle"),
+            )
+            .flag(
+                Flag::new("did", FlagType::String)
+                .alias("did"),
             )
         )
         .command(
@@ -472,6 +541,57 @@ fn like(c: &Context) {
     };
     let res = tokio::runtime::Runtime::new().unwrap().block_on(h);
     return res;
+}
+
+async fn c_card(c: &Context) -> Result<(), Box<dyn std::error::Error>> {
+    //let m = c.args[0].to_string();
+    let author = c.string_flag("author").unwrap_or_else(|_| "syui".to_string());
+    let verify = c.string_flag("verify").unwrap_or_else(|_| "at://did:plc:4hqjfn7m6n5hno3doamuhgef/ai.syui.card.verify/3lagpvhppmd2q".to_string());
+    let col = c.string_flag("col").unwrap_or_else(|_| "ai.syui.card".to_string());
+    //let img = c.string_flag("img").unwrap_or_else(|_| "bafkreigvcjc46qtelpc4wsg7fwf6qktbi6a23ouqiupth2r37zhrn7wbza".to_string());
+    let id = c.int_flag("id")?.try_into()?;
+    let cp = c.int_flag("cp")?.try_into()?;
+    let rank = c.int_flag("rank")?.try_into()?;
+    let rare = c.string_flag("rare").unwrap_or_else(|_| "normal".to_string());
+    let str = post_card::post_request(verify, id, cp, rank, rare, col, author);
+    println!("{}", str.await);
+    Ok(())
+}
+
+fn card(c: &Context) {
+    refresh(c);
+    tokio::runtime::Runtime::new()
+        .unwrap()
+        .block_on(async {
+            if let Err(e) = c_card(c).await {
+                eprintln!("Error: {}", e);
+            }
+        });
+}
+
+async fn c_card_verify(c: &Context) -> Result<(), Box<dyn std::error::Error>> {
+    let col = c.string_flag("col").unwrap_or_else(|_| "ai.syui.card.verify".to_string());
+    let img = c.string_flag("img").unwrap_or_else(|_| "bafkreigvcjc46qtelpc4wsg7fwf6qktbi6a23ouqiupth2r37zhrn7wbza".to_string());
+    let id = c.int_flag("id")?.try_into()?;
+    let cp = c.int_flag("cp")?.try_into()?;
+    let rank = c.int_flag("rank")?.try_into()?;
+    let rare = c.string_flag("rare").unwrap_or_else(|_| "normal".to_string());
+    let user_handle = c.string_flag("handle").unwrap_or_else(|_| "syui.ai".to_string());
+    let user_did = c.string_flag("did").unwrap_or_else(|_| "did:plc:uqzpqmrjnptsxezjx4xuh2mn".to_string());
+    let str = post_card_verify::post_request(col, img, id, cp, rank, rare, user_handle, user_did);
+    println!("{}", str.await);
+    Ok(())
+}
+
+fn card_verify(c: &Context) {
+    refresh(c);
+    tokio::runtime::Runtime::new()
+        .unwrap()
+        .block_on(async {
+            if let Err(e) = c_card_verify(c).await {
+                eprintln!("Error: {}", e);
+            }
+        });
 }
 
 fn repost(c: &Context) {
