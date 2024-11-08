@@ -12,6 +12,11 @@ use crate::data::url;
 use crate::data::w_cfg;
 use crate::data::w_refresh;
 use crate::feed_watch::c_feed_watch;
+use crate::game::post_card;
+use crate::game::post_card_verify;
+use crate::game::post_game;
+use crate::game::post_game_user;
+use crate::game::post_game_login;
 
 use data::ProfileIdentityResolve;
 
@@ -30,6 +35,7 @@ pub mod notify_read;
 pub mod openai;
 pub mod post;
 pub mod post_link;
+pub mod game;
 pub mod profile;
 pub mod refresh;
 pub mod reply;
@@ -155,6 +161,160 @@ fn main() {
             )
         )
         .command(
+            Command::new("card")
+            .description("-v <at://verify> -i <int:id> -p <int:cp> -r <int:rank> -c <collection> -a <author> -img <link> -rare <normal>")
+            .action(card)
+            .flag(
+                Flag::new("id", FlagType::Int)
+                .alias("i"),
+            )
+            .flag(
+                Flag::new("cp", FlagType::Int)
+                .alias("p"),
+            )
+            .flag(
+                Flag::new("rank", FlagType::Int)
+                .alias("r"),
+            )
+            .flag(
+                Flag::new("rare", FlagType::Int)
+            )
+            .flag(
+                Flag::new("col", FlagType::String)
+                .alias("c"),
+            )
+            .flag(
+                Flag::new("author", FlagType::String)
+                .alias("a"),
+            )
+            .flag(
+                Flag::new("verify", FlagType::String)
+                .alias("v"),
+            )
+            .flag(
+                Flag::new("img", FlagType::String)
+            )
+        )
+        .command(
+            Command::new("card-verify")
+            .description("<at://verify> -c <collection> -i <id> -p <cp> -r <rank> -rare <normal> -H <syui.ai> -d <did>")
+            .action(card_verify)
+            .flag(
+                Flag::new("col", FlagType::String)
+                .alias("c"),
+            )
+            .flag(
+                Flag::new("id", FlagType::Int)
+                .alias("i"),
+            )
+            .flag(
+                Flag::new("cp", FlagType::Int)
+                .alias("p"),
+            )
+            .flag(
+                Flag::new("rank", FlagType::Int)
+                .alias("r"),
+            )
+            .flag(
+                Flag::new("rare", FlagType::String)
+            )
+            .flag(
+                Flag::new("handle", FlagType::String)
+                .alias("H"),
+            )
+            .flag(
+                Flag::new("did", FlagType::String)
+                .alias("did"),
+            )
+        )
+        .command(
+            Command::new("game")
+            .description("a <at://yui.syui.ai/ai.syui.game.user/username>")
+            .action(game)
+            .flag(
+                Flag::new("col", FlagType::String)
+                .alias("c"),
+            )
+            .flag(
+                Flag::new("account", FlagType::String)
+                .alias("a"),
+            )
+        )
+        .command(
+            Command::new("game-login")
+            .description("l <bool> -u <username> -c <collection>")
+            .action(game_login)
+            .flag(
+                Flag::new("col", FlagType::String)
+                .alias("c"),
+            )
+            .flag(
+                Flag::new("login", FlagType::Bool)
+                .alias("l"),
+            )
+            .flag(
+                Flag::new("username", FlagType::String)
+                .alias("u"),
+            )
+        )
+        .command(
+            Command::new("game-user")
+            .description("-chara ai -l 20240101 -ten 0 --lv 0 --exp 0 --hp 0 --rank 0 --mode 0 --attach 0 --critical 0 --critical_d 0")
+            .action(game_user)
+            .flag(
+                Flag::new("username", FlagType::String)
+                .alias("u"),
+            )
+            .flag(
+                Flag::new("col", FlagType::String)
+                .alias("c"),
+            )
+            .flag(
+                Flag::new("did", FlagType::String)
+                .alias("d"),
+            )
+            .flag(
+                Flag::new("handle", FlagType::String)
+                .alias("H"),
+            )
+            .flag(
+                Flag::new("character", FlagType::String)
+                .alias("chara"),
+            )
+            .flag(
+                Flag::new("aiten", FlagType::Int)
+                .alias("ten"),
+            )
+            .flag(
+                Flag::new("limit", FlagType::Int)
+                .alias("l"),
+            )
+            .flag(
+                Flag::new("lv", FlagType::Int)
+            )
+            .flag(
+                Flag::new("hp", FlagType::Int)
+            )
+            .flag(
+                Flag::new("attach", FlagType::Int)
+            )
+            .flag(
+                Flag::new("exp", FlagType::Int)
+            )
+            .flag(
+                Flag::new("critical", FlagType::Int)
+            )
+            .flag(
+                Flag::new("critical_d", FlagType::Int)
+            )
+            .flag(
+                Flag::new("rank", FlagType::Int)
+            )
+            .flag(
+                Flag::new("mode", FlagType::Int)
+            )
+        )
+        .command(
             Command::new("like")
             .description("like <cid> -u <uri>")
             .action(like)
@@ -233,6 +393,10 @@ fn main() {
             .flag(
                 Flag::new("post", FlagType::String)
                 .alias("p"),
+            )
+            .flag(
+                Flag::new("col", FlagType::String)
+                .alias("c"),
             )
         )
         .command(
@@ -474,6 +638,145 @@ fn like(c: &Context) {
     return res;
 }
 
+async fn c_card(c: &Context) -> Result<(), Box<dyn std::error::Error>> {
+    //let m = c.args[0].to_string();
+    let author = c.string_flag("author").unwrap_or_else(|_| "syui".to_string());
+    let verify = c.string_flag("verify").unwrap_or_else(|_| "at://did:plc:4hqjfn7m6n5hno3doamuhgef/ai.syui.card.verify/3lagpvhppmd2q".to_string());
+    let col = c.string_flag("col").unwrap_or_else(|_| "ai.syui.card".to_string());
+    //let img = c.string_flag("img").unwrap_or_else(|_| "bafkreigvcjc46qtelpc4wsg7fwf6qktbi6a23ouqiupth2r37zhrn7wbza".to_string());
+    let id = c.int_flag("id")?.try_into()?;
+    let cp = c.int_flag("cp")?.try_into()?;
+    let rank = c.int_flag("rank")?.try_into()?;
+    let rare = c.string_flag("rare").unwrap_or_else(|_| "normal".to_string());
+    let str = post_card::post_request(verify, id, cp, rank, rare, col, author);
+    println!("{}", str.await);
+    Ok(())
+}
+
+fn card(c: &Context) {
+    refresh(c);
+    tokio::runtime::Runtime::new()
+        .unwrap()
+        .block_on(async {
+            if let Err(e) = c_card(c).await {
+                eprintln!("Error: {}", e);
+            }
+        });
+}
+
+async fn c_card_verify(c: &Context) -> Result<(), Box<dyn std::error::Error>> {
+    let col = c.string_flag("col").unwrap_or_else(|_| "ai.syui.card.verify".to_string());
+    let img = c.string_flag("img").unwrap_or_else(|_| "bafkreigvcjc46qtelpc4wsg7fwf6qktbi6a23ouqiupth2r37zhrn7wbza".to_string());
+    let id = c.int_flag("id")?.try_into()?;
+    let cp = c.int_flag("cp")?.try_into()?;
+    let rank = c.int_flag("rank")?.try_into()?;
+    let rare = c.string_flag("rare").unwrap_or_else(|_| "normal".to_string());
+    let user_handle = c.string_flag("handle").unwrap_or_else(|_| "syui.ai".to_string());
+    let user_did = c.string_flag("did").unwrap_or_else(|_| "did:plc:uqzpqmrjnptsxezjx4xuh2mn".to_string());
+
+    //match id === 1 let img = "xxx";
+    let str = post_card_verify::post_request(col, img, id, cp, rank, rare, user_handle, user_did);
+    println!("{}", str.await);
+    Ok(())
+}
+
+fn card_verify(c: &Context) {
+    refresh(c);
+    tokio::runtime::Runtime::new()
+        .unwrap()
+        .block_on(async {
+            if let Err(e) = c_card_verify(c).await {
+                eprintln!("Error: {}", e);
+            }
+        });
+}
+
+async fn c_game(c: &Context) -> Result<(), Box<dyn std::error::Error>> {
+    let account = c.string_flag("account").unwrap_or_else(|_| "at://did:plc:4hqjfn7m6n5hno3doamuhgef/ai.syui.game.user/syui".to_string());
+    let col = c.string_flag("col").unwrap_or_else(|_| "ai.syui.game".to_string());
+    let handle = data_toml(&"handle");
+    if handle == "syui.ai" {
+        let str = post_game::post_request(col, account);
+        println!("{}", str.await);
+        Ok(())
+    } else {
+        Err(Box::new(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Not authorized")))
+    }
+}
+
+fn game(c: &Context) {
+    refresh(c);
+    tokio::runtime::Runtime::new()
+        .unwrap()
+        .block_on(async {
+            if let Err(e) = c_game(c).await {
+                eprintln!("Error: {}", e);
+            }
+        });
+}
+
+async fn c_game_user(c: &Context) -> Result<(), Box<dyn std::error::Error>> {
+    let col = c.string_flag("col").unwrap_or_else(|_| "ai.syui.game.user".to_string());
+    let user_name = c.string_flag("username").unwrap_or_else(|_| "syui".to_string());
+    let user_handle = c.string_flag("handle").unwrap_or_else(|_| "syui.ai".to_string());
+    let user_did = c.string_flag("did").unwrap_or_else(|_| "did:plc:uqzpqmrjnptsxezjx4xuh2mn".to_string());
+    let chara = c.string_flag("character").unwrap_or_else(|_| "ai".to_string());
+    let limit = c.int_flag("limit")?.try_into()?;
+    let aiten = c.int_flag("aiten")?.try_into()?;
+    let lv = c.int_flag("lv")?.try_into()?;
+    let exp = c.int_flag("exp")?.try_into()?;
+    let hp = c.int_flag("hp")?.try_into()?;
+    let rank = c.int_flag("rank")?.try_into()?;
+    let mode = c.int_flag("mode")?.try_into()?;
+    let attach = c.int_flag("attach")?.try_into()?;
+    let critical = c.int_flag("critical")?.try_into()?;
+    let critical_d = c.int_flag("critical_d")?.try_into()?;
+
+    if data_toml(&"handle") == "yui.syui.ai" {
+        let str = post_game_user::post_request(col, user_name, user_did, user_handle, aiten, limit, chara, lv, exp, hp, rank, mode, attach, critical, critical_d);
+        println!("{}", str.await);
+        Ok(())
+    } else {
+        Err(Box::new(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Not authorized")))
+    }
+}
+
+fn game_user(c: &Context) {
+    refresh(c);
+    tokio::runtime::Runtime::new()
+        .unwrap()
+        .block_on(async {
+            if let Err(e) = c_game_user(c).await {
+                eprintln!("Error: {}", e);
+            }
+        });
+}
+
+async fn c_game_login(c: &Context) -> Result<(), Box<dyn std::error::Error>> {
+    let col = c.string_flag("col").unwrap_or_else(|_| "ai.syui.game.login".to_string());
+    let user_name = c.string_flag("username").unwrap_or_else(|_| "syui".to_string());
+    let account = "at://did:plc:4hqjfn7m6n5hno3doamuhgef/ai.syui.game.user/".to_string() + &user_name;
+    let login = c.bool_flag("login");
+    if data_toml(&"handle") == "yui.syui.ai" {
+        let str = post_game_login::post_request(col, user_name, login, account);
+        println!("{}", str.await);
+        Ok(())
+    } else {
+        Err(Box::new(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "Not authorized")))
+    }
+}
+
+fn game_login(c: &Context) {
+    refresh(c);
+    tokio::runtime::Runtime::new()
+        .unwrap()
+        .block_on(async {
+            if let Err(e) = c_game_login(c).await {
+                eprintln!("Error: {}", e);
+            }
+        });
+}
+
 fn repost(c: &Context) {
     refresh(c);
     let m = c.args[0].to_string();
@@ -528,6 +831,7 @@ fn mention(c: &Context) {
     let h = async {
         let str = profile::get_request(m.to_string()).await;
         let profile: ProfileIdentityResolve = serde_json::from_str(&str).unwrap();
+        let col = c.string_flag("col").unwrap_or_else(|_| "app.bsky.feed.post".to_string());
         let udid = profile.did;
         let handle = m.to_string();
         let at = "@".to_owned() + &handle;
@@ -535,6 +839,7 @@ fn mention(c: &Context) {
         let s = 0;
         if let Ok(post) = c.string_flag("post") {
             let str = mention::post_request(
+                col,
                 post.to_string(),
                 at.to_string(),
                 udid.to_string(),

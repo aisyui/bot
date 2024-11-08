@@ -107,3 +107,38 @@ ADMIN=syui.syu.is
 $ docker compose build
 $ docker compose up -d
 ```
+
+## pds:card
+
+- https://atproto.com/ja/guides/lexicon
+- https://at.syu.is/at/did:plc:uqzpqmrjnptsxezjx4xuh2mn/ai.syui.card/3lagpwihqxi2v
+
+```sh
+# oauth(button)
+[yui]ai.syui.card.verify -> [user]ai.syui.card
+
+[yui]
+$ ./target/debug/ai card-verify -i 0 -p 0 -r 0 -h syui.ai -d did:plc:uqzpqmrjnptsxezjx4xuh2mn
+{"uri":"at://did:plc:4hqjfn7m6n5hno3doamuhgef/ai.syui.card.verify/3lagpvhppmd2q"}
+
+[user]
+$ ./target/debug/ai card -i 0 -p 0 -r 0 -v at://did:plc:4hqjfn7m6n5hno3doamuhgef/ai.syui.card.verify/3lagpvhppmd2q
+```
+
+## pds:game
+
+- https://atproto.com/ja/specs/record-key
+- https://at.syu.is/at/did:plc:uqzpqmrjnptsxezjx4xuh2mn/ai.syui.game/self
+
+```sh
+# oauth(play)
+[yui]ai.syui.game.user -> [user]ai.syui.game
+
+[account]
+# https://at.syu.is/at/did:plc:4hqjfn7m6n5hno3doamuhgef/ai.syui.game.user/syui
+    ## [rkey]
+    1. echo $handle|cut -d . -f 1
+    2. $handle
+    3. tid
+```
+

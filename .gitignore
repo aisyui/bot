@@ -1,6 +1,6 @@
 Cargo.lock
 target
-*.json
+#*.json
 *.DS_Store
 **.DS_Store
 scpt/json/

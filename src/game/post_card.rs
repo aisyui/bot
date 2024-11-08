@@ -5,39 +5,26 @@ use crate::url;
 use iso8601_timestamp::Timestamp;
 use serde_json::json;
 
-pub async fn post_request(col: String, text: String, at: String, udid: String, s: i32, e: i32) -> String {
+pub async fn post_request(verify: String, id: i32, cp: i32, rank: i32, rare: String, col: String, author: String) -> String {
     let token = data_refresh(&"access");
     let did = data_toml(&"did");
     let handle = data_toml(&"handle");
-
     let url = url(&"record_create");
-    //let col = "app.bsky.feed.post".to_string();
-
     let d = Timestamp::now_utc();
     let d = d.to_string();
 
     let post = Some(json!({
-        "did": did.to_string(),
         "repo": handle.to_string(),
+        "did": did.to_string(),
         "collection": col.to_string(),
         "record": {
-            "text": at.to_string() + &" ".to_string() + &text.to_string(),
-            "$type": col.to_string(),
+            "id": id,
+            "cp": cp,
+            "rank": rank,
+            "rare": rare.to_string(),
+            "author": author.to_string(),
+            "verify": verify.to_string(),
             "createdAt": d.to_string(),
-            "facets": [
-            {
-                "$type": "app.bsky.richtext.facet",
-                "index": {
-                    "byteEnd": e,
-                    "byteStart": s
-                },"features": [
-                {
-                    "did": udid.to_string(),
-                    "$type": "app.bsky.richtext.facet#mention"
-                }
-                ]
-            }
-            ]
         },
     }));
 

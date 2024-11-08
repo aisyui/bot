@@ -107,6 +107,7 @@ pub struct BaseUrl {
     pub record_list: String,
     pub record_create: String,
     pub record_delete: String,
+    pub record_put: String,
     pub session_create: String,
     pub session_refresh: String,
     pub session_get: String,
@@ -142,6 +143,7 @@ pub fn url(s: &str) -> String {
     let baseurl = BaseUrl {
         profile_get: "com.atproto.identity.resolveHandle".to_string(),
         thread_get: "app.bsky.feed.getPostThread".to_string(),
+        record_put: "com.atproto.repo.putRecord".to_string(),
         record_create: "com.atproto.repo.createRecord".to_string(),
         record_delete: "com.atproto.repo.deleteRecord".to_string(),
         describe: "com.atproto.repo.describeRepo".to_string(),
@@ -173,6 +175,7 @@ pub fn url(s: &str) -> String {
         "record_list" => t.to_string() + &baseurl.record_list,
         "record_create" => t.to_string() + &baseurl.record_create,
         "record_delete" => t.to_string() + &baseurl.record_delete,
+        "record_put" => t.to_string() + &baseurl.record_put,
         "session_create" => t.to_string() + &baseurl.session_create,
         "session_refresh" => t.to_string() + &baseurl.session_refresh,
         "session_get" => t.to_string() + &baseurl.session_get,
