@@ -1,0 +1,56 @@
+{
+	"lexicon": 1,
+	"id": "ai.syui.card",
+	"defs": {
+		"main": {
+			"type": "record",
+			"description": "Record containing a cards box.",
+			"key": "tid",
+			"record": {
+				"type": "object",
+				"required": ["verify", "createdAt"],
+				"properties": {
+					"id":{
+						"type": "integer",
+						"minimum": 0,
+						"maximum": 14,
+						"default": 0
+					},
+					"cp":{
+						"type": "integer",
+						"minimum": 1,
+						"maximum": 5000,
+						"default": 1
+					},
+					"rank":{
+						"type": "integer",
+						"minimum": 0,
+						"maximum": 7,
+						"default": 0
+					},
+					"rare": {
+						"type": "string",
+						"enum": ["normal", "super", "ultra", "yui", "ai"],
+						"default": "normal"
+					},
+					"author": {
+						"type": "string",
+						"format": "uri",
+						"description": "https://verify...",
+						"default": "https://yui.syui.ai"
+					},
+					"verify": {
+						"type": "string",
+						"format": "at-uri",
+						"description": "at://verify..."
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "datetime",
+						"description": "Client-declared timestamp when this post was originally created."
+					}
+				}
+			}
+		}
+	}
+}

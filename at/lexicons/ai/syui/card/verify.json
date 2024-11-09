@@ -1,0 +1,62 @@
+{
+  "lexicon": 1,
+  "id": "ai.syui.card.verify",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Record containing a card verify.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["handle", "did", "createdAt"],
+        "properties": {
+									"id":{
+										"type": "integer",
+										"minimum": 0,
+										"maximum": 14,
+										"default": 0
+									},
+									"cp":{
+										"type": "integer",
+										"minimum": 1,
+										"maximum": 10000,
+										"default": 1
+									},
+									"rank":{
+										"type": "integer",
+										"minimum": 0,
+										"maximum": 7,
+										"default": 0
+									},
+									"rare": {
+										"type": "string",
+										"enum": ["normal", "super", "ultra", "yui", "ai"],
+										"default": "normal"
+									},
+									"handle": {
+										"type": "string",
+										"maxLength": 32,
+										"maxGraphemes": 32
+									},
+									"did": {
+										"type": "string"
+									},
+									"embed": {
+										"type": "union",
+										"refs": [
+											"app.bsky.embed.images",
+											"app.bsky.embed.external",
+											"app.bsky.embed.record",
+											"app.bsky.embed.recordWithMedia"
+												]
+									},
+									"createdAt": {
+										"type": "string",
+										"format": "datetime",
+										"description": "Client-declared timestamp when this post was originally created."
+									}
+								}
+						}
+				}
+		}
+}
