@@ -578,6 +578,8 @@ async fn c_card_verify(c: &Context) -> Result<(), Box<dyn std::error::Error>> {
     let rare = c.string_flag("rare").unwrap_or_else(|_| "normal".to_string());
     let user_handle = c.string_flag("handle").unwrap_or_else(|_| "syui.ai".to_string());
     let user_did = c.string_flag("did").unwrap_or_else(|_| "did:plc:uqzpqmrjnptsxezjx4xuh2mn".to_string());
+
+    //match id === 1 let img = "xxx";
     let str = post_card_verify::post_request(col, img, id, cp, rank, rare, user_handle, user_did);
     println!("{}", str.await);
     Ok(())
