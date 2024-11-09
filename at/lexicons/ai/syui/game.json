@@ -1,0 +1,27 @@
+{
+	"lexicon": 1,
+	"id": "ai.syui.game",
+	"defs": {
+		"main": {
+			"type": "record",
+			"description": "Record containing a game.",
+			"key": "literal:self",
+			"record": {
+				"type": "object",
+				"required": ["account", "createdAt"],
+				"properties": {
+					"account": {
+						"type": "string",
+						"format": "at-uri",
+						"description": "at://verify..."
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "datetime",
+						"description": "Client-declared timestamp when this post was originally created."
+					}
+				}
+			}
+		}
+	}
+}
