@@ -27,11 +27,16 @@
 						},
 						"charactor": {
 							"type": "object",
-							"enum": ["ai", "test"],
+							"enum": ["ai","cerberus","chinesedragon","dragon","kirin","kitsune","leviathan","pegasus","phoenix"],
 							"properties": {
-								"ai":{
 									"type": "object",
 									"properties": {
+										"group":{
+											"type": "string"
+										},
+										"season":{
+											"type": "integer"
+										},
 										"lv":{
 											"type": "integer",
 											"minimum": 1,
@@ -78,7 +83,6 @@
 										}
 									}
 								}
-							}
 						},
 						"createdAt": {
 							"type": "string",
