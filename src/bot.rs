@@ -431,6 +431,42 @@ pub fn c_bot(c: &Context) {
                         println!("{}", str_rep);
                         w_cid(cid.to_string(), log_file(&"n1"), true);
                     }
+                } else if com == "game" || com == "/game" {
+                    let output = Command::new(data_scpt(&"ai"))
+                        .arg(&"atproto").arg(&"game")
+                        .arg(&handle)
+                        .arg(&did)
+                        .arg(&cid)
+                        .arg(&uri)
+                        .arg(&cid_root)
+                        .arg(&uri_root)
+                        .arg(&host)
+                        .arg(&prompt)
+                        .arg(&prompt_sub)
+                        .output()
+                        .expect("zsh");
+                    let d = String::from_utf8_lossy(&output.stdout);
+                    let dd = "\n".to_owned() + &d.to_string();
+                    let text_limit = c_char(dd);
+                    handlev = d.lines().collect::<Vec<_>>()[0].to_string();
+                    link = "https://card.syui.ai/".to_owned() + &handlev;
+                    println!("{}", e);
+                    e = link.chars().count();
+                    if text_limit.len() > 3 {
+                        let str_rep = reply_link::post_request(
+                            text_limit.to_string(),
+                            link.to_string(),
+                            s,
+                            e.try_into().unwrap(),
+                            cid.to_string(),
+                            uri.to_string(),
+                            cid_root.to_string(),
+                            uri_root.to_string(),
+                        )
+                        .await;
+                        println!("{}", str_rep);
+                        w_cid(cid.to_string(), log_file(&"n1"), true);
+                    }
                 } else if com == "quiz" || com == "/quiz" {
                     println!("admin:{}", admin);
                     let output = Command::new(data_scpt(&"ai"))
